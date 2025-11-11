@@ -12,7 +12,7 @@ services:
       timeout: 5s
       retries: 10
 
-  app:
+  app-1: &app
     build:
       context: .
     env_file: ./env/app.env
@@ -20,6 +20,9 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+
+  app-2:
+    <<: *app
 
   nginx:
     image: nginx:stable-alpine
@@ -29,7 +32,8 @@ services:
       - ./nginx:/etc/nginx/conf.d
     restart: unless-stopped
     depends_on:
-      - app
+      - app-1
+      - app-2
 
   redis:
     image: redis:7.2.4
